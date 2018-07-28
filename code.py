@@ -49,12 +49,12 @@ def security_personnel():
         #if press 4 return to main menu
 
 def Flight_staff():
-     while True:
-         print ("To display the list of passengers (sorted by name) for a given airline who cleared security checkins press 3")
-         #take passengers details
-         #if all informations are correct press y else n
-         #if press wrong again restart loop
-         #if press 4 return to main menu
+    while True:
+        print ("To display the list of passengers (sorted by name) for a given airline who cleared security checkins press 3")
+        #take passengers details
+        #if all informations are correct press y else n
+        #if press wrong again restart loop
+        #if press 4 return to main menu
 
 def passenger():
     while True():
@@ -82,7 +82,7 @@ def main():
             passenger()
         elif (command.upper() == "1"):
             Flight_details()
-        elif (command.upper() == "2")
+        elif (command.upper() == "2"):
             Passengers_details()
 
 if __name__ == "__main__":
