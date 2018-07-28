@@ -27,9 +27,9 @@ def Flight_details():
     df1 = pd.read_sql_query("Select DISTINCT CONNECTION as FLIGHT_STATIONS from Flights", conn)
     df = pd.concat([df, df1], ignore_index=True)
     df = df.FLIGHT_STATIONS.unique()
-    print ("list of all the cities with airport").
-    print (df)
-    while:
+    print ("list of all the cities with airport")
+    df
+    while True:
         print ("Input name of the city for which you want to see flight details else print 1 to exit")
         command = raw_input()
         if (command == '1'):
