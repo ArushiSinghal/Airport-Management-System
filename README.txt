@@ -1,6 +1,9 @@
 ﻿README
 
 sudo apt install sqlitebrowser
+sudo pip install openpyxl
+sudo pip install xlrd
+sudo pip install tabulate
 
 sqlitebrowser (to run sqlite browser)
 
