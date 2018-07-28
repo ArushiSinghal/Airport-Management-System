@@ -57,7 +57,7 @@ def Flight_staff():
         #if press 4 return to main menu
 
 def passenger():
-    while True():
+    while True:
         #want to book flight
         #want to see past bookings
         #want to exit
