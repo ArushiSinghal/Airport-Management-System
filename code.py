@@ -4,16 +4,12 @@ import numpy as np
 import pandas as pd
 import re
 import os
-import csv
-from csv import *
-from matplotlib import *
 import sys
 from openpyxl import load_workbook
 from xlrd import open_workbook
 import operator
 import datetime
 import time
-import matplotlib.pyplot as plt
 from datetime import *
 import sqlite3
 import random
