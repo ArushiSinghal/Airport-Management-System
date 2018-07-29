@@ -1,12 +1,9 @@
 #!/usr/bin/python
 #coding=utf-8
-import numpy as np
 import pandas as pd
 import re
 import os
 import sys
-from openpyxl import load_workbook
-from xlrd import open_workbook
 import operator
 import datetime
 import time
