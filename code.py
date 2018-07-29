@@ -85,7 +85,7 @@ def Flight_details():
         command = raw_input("Input name of the city for which you want to see flight details else print 1 to exit: ")
         if (command == '1'):
             return
-        if (!command.isalpha()):
+        if (command.isalpha() != True):
             continue
         command = command.upper()
         df = pd.read_sql_query("Select * from Flights where SOURCE=" + "'" + command + "'" + " OR DESTINATION=" + "'" + command + "'", sq)
@@ -195,12 +195,12 @@ def Passengers_details():
 
 def main():
     while True:
-        print ("press S if Security Personnel")
+        print ("\nPress S if Security Personnel")
         print ("press F if Flight Staff")
         print ("press P if Passengers")
         print ("To know the details of all flights departing and arriving from particular airport press 1.")
-        print ("List of passengers arriving or departing from particular airport press 2")
-        print ("press E to exit.")
+        print ("List of all passengers arriving or departing from particular airport press 2")
+        print ("press E to exit.\n")
         command = raw_input()
         if (command.upper() == "E"):
             sqcur.close()
