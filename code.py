@@ -21,8 +21,8 @@ sqcur = sq.cursor()
 
 def seat_number(flight_num,Class):
     val = pd.read_sql_query("Select COUNT(*) as count from Passengers where FLIGHT_NUMBER=" + flight_num, sq)
-    val = val['count'].iloc[0]
-    seat = Class + "/" + val
+    val = int(val['count'].iloc[0]) + 1
+    seat = Class + "/" + str(val)
     return seat
 
 def generate_pnr():
@@ -37,41 +37,68 @@ def booking():
     print ("list of all the cities with airport")
     print (df)
     while True:
-        print ("Press 1 to book else press 2 to exit")
-        command = raw_input("Input: ")
+        command = raw_input("Press 1 to book else press 2 to exit: ")
         if (command == '2'):
             return
         elif (command != '1'):
             continue
-        board_air = raw_input("Name of boarding station: ")
-        des_air = raw_input("Name of destination station: ")
-        board_air = board_air.upper()
-        des_air = des_air.upper()
-        df = pd.read_sql_query("Select Flights.* from Flights,Passengers where SOURCE=" + "'" + board_air + "'" + " AND DESTINATION=" + "'" + des_air + "'" + "AND Flights.FLIGHT_NUMBER = Passengers.FLIGHT_NUMBER Having COUNT(Passengers.FLIGHT_NUMBER) < Flights.SIZE", sq)
+        board_air = (raw_input("Name of boarding station: ")).upper()
+        des_air = (raw_input("Name of destination station: ")).upper()
+        df = pd.read_sql_query("Select Flights.* from Flights,Passengers where SOURCE=" + "'" + board_air + "'" + " AND DESTINATION=" + "'" + des_air + "'" + " AND Flights.FLIGHT_NUMBER = Passengers.FLIGHT_NUMBER Having COUNT(Passengers.FLIGHT_NUMBER) < Flights.SIZE", sq)
         if (df.empty):
-            print ("No flight on this route and if it is there than no vacancy available")
+            print ("No flight on this route and if it is there than no vacancy available.")
         else:
             print tabulate(df, headers='keys', tablefmt='psql')
-            command = raw_input("Input flight number fromabove if want to book ticket else press 1 to re-booking: ")
-            if (command == '1'):
+            flight_number = raw_input("Input flight number from available flights: ")
+            try:
+                val = int(flight_num)
+            except ValueError:
+                print("Flight number should be an integer")
                 continue
-            df = pd.read_sql_query("Select Flights.* from Flights,Passengers where FLIGHT_NUMBER=" + command + "AND Flights.FLIGHT_NUMBER = Passengers.FLIGHT_NUMBER Having COUNT(Passengers.FLIGHT_NUMBER) < Flights.SIZE", sq)
+            df = pd.read_sql_query("Select Flights.* from Flights,Passengers where FLIGHT_NUMBER=" + flight_number + "AND Flights.FLIGHT_NUMBER = Passengers.FLIGHT_NUMBER Having COUNT(Passengers.FLIGHT_NUMBER) < Flights.SIZE", sq)
             if (df.empty):
-                print ("wrong flight number or vacancy in flight...exit")
+                print ("wrong flight number or no vacancy in flight...exit")
                 continue
             first_name = (raw_input("First Name: ")).upper()
+            if first_name == '':
+                print("Incorrect input hence exit")
+                continue
             last_name = (raw_input("Last Name: ")).upper()
+            if last_name == '':
+                print("Incorrect input hence exit")
+                continue
             Age = int(raw_input("Enter your Age: "))
+            try:
+                val = int(Age)
+            except ValueError:
+                print("Incorrect input hence exit")
+                continue
             Nationality = (raw_input("Nationality: ")).upper()
+            if Nationality == '':
+                print("Incorrect input hence exit")
+                continue
             Mobile_number = int(raw_input("Enter your MObile Number: "))
+            try:
+                val = int(Mobile_number)
+            except ValueError:
+                print("Incorrect input hence exit")
+                continue
             Class = (raw_input("Enter class Either B or E: ")).upper()
+            Gender = (raw_input("Enter Gender Either M or F: ")).upper()
             if (Class != 'B' or Class != 'E'):
                 Class = 'E'
-            PNR = generate_pnr()
-            seat = seat_number(command,Class)
-            values = (command,PNR, first_name, last_name, Age, Nationality,'N' ,Mobile_number,seat,'N')
-            sqcur.execute("INSERT INTO PASSENGER VALUES (?,?,?,?,?,?,?,?,?,?)", values)
-            sq.commit()
+            if (Gender != 'M' or Gender != 'F'):
+                Gender = 'M'
+            values = (flight_number, first_name, last_name, Age, Nationality, Mobile_number, Gender)
+            print (values)
+            command = (raw_input("Press Y if all infomations are correct and want to book flight else exit: ")).upper()
+            if (command == 'Y'):
+                PNR = generate_pnr()
+                seat = seat_number(flight_number,Class)
+                values = (flight_number,PNR, first_name, last_name, Age, Nationality,'N' ,Mobile_number,seat,'N',Gender)
+                sqcur.execute("INSERT INTO PASSENGER VALUES (?,?,?,?,?,?,?,?,?,?,?)", values)
+                sq.commit()
+                print ("sucessfully booked ticket.")
 
 def Flight_details():
     df = pd.read_sql_query("Select DISTINCT SOURCE as FLIGHT_STATIONS from Flights", sq)
