@@ -44,7 +44,7 @@ def booking():
             continue
         board_air = (raw_input("Name of boarding station: ")).upper()
         des_air = (raw_input("Name of destination station: ")).upper()
-        df = pd.read_sql_query("Select Flights.* from Flights,Passengers where SOURCE=" + "'" + board_air + "'" + " AND DESTINATION=" + "'" + des_air + "'" + " AND Flights.FLIGHT_NUMBER = Passengers.FLIGHT_NUMBER Having COUNT(Passengers.FLIGHT_NUMBER) < Flights.SIZE", sq)
+        df = pd.read_sql_query("Select Flights.* from Flights,Passengers where SOURCE=" + "'" + board_air + "'" + " AND DESTINATION=" + "'" + des_air + "'" + " AND Flights.FLIGHT_NUMBER = Passengers.FLIGHT_NUMBER GROUP BY Passengers.FLIGHT_NUMBER Having COUNT(Passengers.FLIGHT_NUMBER) < Flights.SIZE", sq)
         if (df.empty):
             print ("No flight on this route and if it is there than no vacancy available.")
         else:
@@ -55,7 +55,7 @@ def booking():
             except ValueError:
                 print("Flight number should be an integer")
                 continue
-            df = pd.read_sql_query("Select Flights.* from Flights,Passengers where FLIGHT_NUMBER=" + flight_number + "AND Flights.FLIGHT_NUMBER = Passengers.FLIGHT_NUMBER Having COUNT(Passengers.FLIGHT_NUMBER) < Flights.SIZE", sq)
+            df = pd.read_sql_query("Select Flights.* from Flights,Passengers where FLIGHT_NUMBER=" + flight_number + " AND Flights.FLIGHT_NUMBER = Passengers.FLIGHT_NUMBER GROUP BY Passengers.FLIGHT_NUMBER Having COUNT(Passengers.FLIGHT_NUMBER) < Flights.SIZE", sq)
             if (df.empty):
                 print ("wrong flight number or no vacancy in flight...exit")
                 continue
