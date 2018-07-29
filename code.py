@@ -27,8 +27,7 @@ def Flight_details():
     df = pd.read_sql_query("Select DISTINCT SOURCE as FLIGHT_STATIONS from Flights", sq)
     df1 = pd.read_sql_query("Select DISTINCT CONNECTION as FLIGHT_STATIONS from Flights", sq)
     df = pd.concat([df, df1], ignore_index=True)
-    #df = (df.drop_duplicates()).dropna(how='any',axis=0)
-    df = (df.drop_duplicates())
+    df = (df.drop_duplicates()).dropna(how='any',axis=0)
     print ("list of all the cities with airport")
     print (df)
     while True:
@@ -44,16 +43,31 @@ def Flight_details():
             print tabulate(df, headers='keys', tablefmt='psql')
             with pd.option_context('display.max_rows', None, 'display.max_columns', 3):
                 print(df)
-'''
+
 def Flight_staff():
     while True:
-        print ("To display the list of passengers (sorted by name) for a given airline who cleared security checkins press 3")
-        command = raw_input("To clear passengers for security checking press 1 and to exit press 3")
-        sqlquery = raw_input("mysql>: ")
-        #if all informations are correct press y else n
-        #if press wrong again restart loop
-        #if press 4 return to main menu
-'''
+        sqlquery = raw_input("To see passengers who cleared security checkin press 6 else press 1 to exit: ")
+        if (sqlquery == '1'):
+            return
+        if (sqlquery != '6'):
+            continue
+        command = raw_input("Enter flight number: ")
+        count = pd.read_sql_query("Select COUNT(*) from Passengers where FLIGHT_NUMBER=" + flight_num + " ORDER BY First_Name", sq) 
+        df = pd.read_sql_query("Select PNR,First_Name,Last_Name,Class/Seat,Mobile_number from Passengers where FLIGHT_NUMBER=" + flight_num + " ORDER BY First_Name Last_Name", sq)
+        if (df.empty):
+            print ("No passenger has cleared the securityt checkinwith this flight number or no flight exist with this number")
+        else:
+            print ("Total of passengers are" + count)
+            print ("Passenger details")
+            print tabulate(df, headers='keys', tablefmt='psql')
+            sqlquery = raw_input("Type Y if want to delete this information else N: ")
+            if (sqlquery.upper() == 'Y'):
+                sqcur.execute("update Passengers set Security_Checkin='Y' where PNR = " + "'" + pnr + "'")
+                sq.commit()
+                print ("Passenger can succesfully board the flight")
+            else:
+                print ("Passenger cannot board the flight as not cleared security check-in.")
+
 def security_personnel():
     while True:
         sqlquery = raw_input("For clearing security checkin for passengers press 6 else press 1 to exit: ")
