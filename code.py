@@ -79,15 +79,14 @@ def booking():
 
 def Flight_details():
     df = pd.read_sql_query("Select DISTINCT SOURCE as FLIGHT_STATIONS from Flights", sq)
-    print ("list of all the cities with airport")
+    print ("\nlist of all the cities with airport")
     print (df)
     while True:
-        command = raw_input("Input name of the city for which you want to see flight details else print 1 to exit: ")
+        command = (raw_input("\nInput name of the city for which you want to see flight details else print 1 to exit: ")).upper()
         if (command == '1'):
             return
         if (command.isalpha() != True):
             continue
-        command = command.upper()
         df = pd.read_sql_query("Select * from Flights where SOURCE=" + "'" + command + "'" + " OR DESTINATION=" + "'" + command + "'", sq)
         if (df.empty):
             print ("No flight on this route")
