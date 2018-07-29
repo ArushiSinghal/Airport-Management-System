@@ -227,7 +227,7 @@ def Passengers_details():
 
 def main():
     while True:
-        command = raw_input("\nPress S if Security Personnel.\nPress F if Flight Staff.\nPress P if Passengers.\nTo know the details of all flights departing and arriving from particular airport press 1.\nList of all passengers arriving or departing from particular airport press 2.\nPress E to exit.\nInput: ")
+        command = raw_input("\nPress S if you are Security Personnel.\nPress F if you are Flight Staff.\nPress P if Passengers.\nPress 1 to know the details of all flights departing and arriving from particular airport.\nPress 2 to see list of all passengers arriving or departing from particular airport.\nPress E to exit.\nInput: ")
         if (command.upper() == "E"):
             sqcur.close()
             sq.close()
