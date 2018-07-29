@@ -37,7 +37,7 @@ def booking():
     print ("list of all the cities with airport")
     print (df)
     while True:
-        command = raw_input("Press 1 to book else press 2 to exit: ")
+        command = raw_input("\nPress 1 to book else press 2 to exit: ")
         if (command == '2'):
             return
         elif (command != '1'):
