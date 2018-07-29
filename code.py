@@ -107,7 +107,7 @@ def Flight_details():
     print ("\nlist of all the cities with airport")
     print (df)
     while True:
-        command = (raw_input("\nInput name of the city for which you want to see flight details else print 1 to exit: ")).upper()
+        command = (raw_input("\nInput name of the city for which you want to see flight details else PRESS 1 to exit: ")).upper()
         if (command == '1'):
             return
         if (command.isalpha() != True):
@@ -120,7 +120,7 @@ def Flight_details():
 
 def Flight_staff():
     while True:
-        sqlquery = raw_input("\nTo see passengers who cleared security checkin press 6 else press 1 to exit: ")
+        sqlquery = raw_input("\nTo see passengers who cleared security checkin PRESS 6 else PRESS 1 to exit: ")
         if (sqlquery == '1'):
             return
         if (sqlquery != '6'):
