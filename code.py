@@ -5,9 +5,6 @@ import re
 import os
 import sys
 import operator
-import datetime
-import time
-from datetime import *
 import sqlite3
 import random
 import string
