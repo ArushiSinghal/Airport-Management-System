@@ -38,9 +38,9 @@ def booking():
             continue
         board_air = (raw_input("Name of boarding station: ")).upper()
         des_air = (raw_input("Name of destination station: ")).upper()
-        df = pd.read_sql_query("Select Flights.* from Flights,Passengers where SOURCE=" + "'" + board_air + "'" + " AND DESTINATION=" + "'" + des_air + "'" + " AND Flights.FLIGHT_NUMBER = Passengers.FLIGHT_NUMBER GROUP BY Passengers.FLIGHT_NUMBER Having COUNT(Passengers.FLIGHT_NUMBER) < Flights.SIZE", sq)
+        df = pd.read_sql_query("Select Flights.* from Flights,Passengers where SOURCE=" + "'" + board_air + "'" + " AND DESTINATION=" + "'" + des_air + "'", sq)
         if (df.empty):
-            print ("No flight on this route and if it is there then no vacancy available.")
+            print ("No flight on this route.")
         else:
             print tabulate(df, headers='keys', tablefmt='psql')
             flight_number = raw_input("Input flight number from available flights: ")
@@ -49,7 +49,14 @@ def booking():
             except ValueError:
                 print("Flight number should be an integer")
                 continue
-            df = pd.read_sql_query("Select Flights.* from Flights,Passengers where SOURCE=" + "'" + board_air + "'" + " AND DESTINATION=" + "'" + des_air + "'" + " AND Flights.FLIGHT_NUMBER=" + flight_number + " AND Flights.FLIGHT_NUMBER = Passengers.FLIGHT_NUMBER GROUP BY Passengers.FLIGHT_NUMBER Having COUNT(Passengers.FLIGHT_NUMBER) < Flights.SIZE", sq)
+            count = pd.read_sql_query("Select COUNT(*) as count from Passengers where FLIGHT_NUMBER=" + flight_number, sq)
+            count = int(count['count'].iloc[0])
+            size = pd.read_sql_query("Select SIZE from Flights where FLIGHT_NUMBER=" + flight_number, sq)
+            size = int(size['SIZE'].iloc[0])
+            if (size <= count):
+                print ("No more vacancy in this flight number or you entered wrong number...please enter different flight number...exit")
+                continue
+            df = pd.read_sql_query("Select Flights.* from Flights where SOURCE=" + "'" + board_air + "'" + " AND DESTINATION=" + "'" + des_air + "'" + " AND Flights.FLIGHT_NUMBER=" + flight_number, sq)
             if (df.empty):
                 print ("wrong flight number for your source and destination")
                 continue
