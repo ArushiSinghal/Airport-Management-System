@@ -51,7 +51,7 @@ def Flight_staff():
             return
         if (sqlquery != '6'):
             continue
-        command = raw_input("Enter flight number: ")
+        flight_num = raw_input("Enter flight number: ")
         count = pd.read_sql_query("Select COUNT(*) from Passengers where FLIGHT_NUMBER=" + flight_num + " ORDER BY First_Name", sq) 
         df = pd.read_sql_query("Select PNR,First_Name,Last_Name,Class/Seat,Mobile_number from Passengers where FLIGHT_NUMBER=" + flight_num + " ORDER BY First_Name Last_Name", sq)
         if (df.empty):
@@ -62,9 +62,9 @@ def Flight_staff():
             print tabulate(df, headers='keys', tablefmt='psql')
             sqlquery = raw_input("Type Y if want to delete this information else N: ")
             if (sqlquery.upper() == 'Y'):
-                sqcur.execute("update Passengers set Security_Checkin='Y' where PNR = " + "'" + pnr + "'")
+                sqcur.execute("delete from Passengers where FLIGHT_NUMBER=?", flight_num)
                 sq.commit()
-                print ("Passenger can succesfully board the flight")
+                print ("Information is deleted successfully.")
             else:
                 print ("Passenger cannot board the flight as not cleared security check-in.")
 
@@ -108,6 +108,8 @@ def main():
         print ("press E to exit.")
         command = raw_input()
         if (command.upper() == "E"):
+            sqcur.close()
+            sq.close()
             sys.exit()
         elif (command.upper() == "S"):
             security_personnel()
