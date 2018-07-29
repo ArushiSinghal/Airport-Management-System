@@ -27,10 +27,10 @@ def seat_number(flight_num,Class):
 
 def generate_pnr():
     while True:
-        random = ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(6)])
-        df = pd.read_sql_query("Select * from Passengers where PNR=" + "'" + random + "'", sq)
+        gen = ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(6)])
+        df = pd.read_sql_query("Select * from Passengers where PNR=" + "'" + gen + "'", sq)
         if (df.empty):
-            return random
+            return gen
 
 def booking():
     df = pd.read_sql_query("Select DISTINCT SOURCE as FLIGHT_STATIONS from Flights", sq)
@@ -46,18 +46,18 @@ def booking():
         des_air = (raw_input("Name of destination station: ")).upper()
         df = pd.read_sql_query("Select Flights.* from Flights,Passengers where SOURCE=" + "'" + board_air + "'" + " AND DESTINATION=" + "'" + des_air + "'" + " AND Flights.FLIGHT_NUMBER = Passengers.FLIGHT_NUMBER GROUP BY Passengers.FLIGHT_NUMBER Having COUNT(Passengers.FLIGHT_NUMBER) < Flights.SIZE", sq)
         if (df.empty):
-            print ("No flight on this route and if it is there than no vacancy available.")
+            print ("No flight on this route and if it is there then no vacancy available.")
         else:
             print tabulate(df, headers='keys', tablefmt='psql')
             flight_number = raw_input("Input flight number from available flights: ")
             try:
-                val = int(flight_num)
+                val = int(flight_number)
             except ValueError:
                 print("Flight number should be an integer")
                 continue
-            df = pd.read_sql_query("Select Flights.* from Flights,Passengers where FLIGHT_NUMBER=" + flight_number + " AND Flights.FLIGHT_NUMBER = Passengers.FLIGHT_NUMBER GROUP BY Passengers.FLIGHT_NUMBER Having COUNT(Passengers.FLIGHT_NUMBER) < Flights.SIZE", sq)
+            df = pd.read_sql_query("Select Flights.* from Flights,Passengers where SOURCE=" + "'" + board_air + "'" + " AND DESTINATION=" + "'" + des_air + "'" + " AND Flights.FLIGHT_NUMBER=" + flight_number + " AND Flights.FLIGHT_NUMBER = Passengers.FLIGHT_NUMBER GROUP BY Passengers.FLIGHT_NUMBER Having COUNT(Passengers.FLIGHT_NUMBER) < Flights.SIZE", sq)
             if (df.empty):
-                print ("wrong flight number or no vacancy in flight...exit")
+                print ("wrong flight number for your source and destination")
                 continue
             first_name = (raw_input("First Name: ")).upper()
             if first_name == '':
@@ -67,7 +67,7 @@ def booking():
             if last_name == '':
                 print("Incorrect input hence exit")
                 continue
-            Age = int(raw_input("Enter your Age: "))
+            Age = raw_input("Enter your Age: ")
             try:
                 val = int(Age)
             except ValueError:
@@ -77,7 +77,7 @@ def booking():
             if Nationality == '':
                 print("Incorrect input hence exit")
                 continue
-            Mobile_number = int(raw_input("Enter your MObile Number: "))
+            Mobile_number = raw_input("Enter your MObile Number: ")
             try:
                 val = int(Mobile_number)
             except ValueError:
@@ -89,6 +89,8 @@ def booking():
                 Class = 'E'
             if (Gender != 'M' or Gender != 'F'):
                 Gender = 'M'
+            Age = int(Age)
+            Mobile_number = int(Mobile_number)
             values = (flight_number, first_name, last_name, Age, Nationality, Mobile_number, Gender)
             print (values)
             command = (raw_input("Press Y if all infomations are correct and want to book flight else exit: ")).upper()
@@ -96,7 +98,7 @@ def booking():
                 PNR = generate_pnr()
                 seat = seat_number(flight_number,Class)
                 values = (flight_number,PNR, first_name, last_name, Age, Nationality,'N' ,Mobile_number,seat,'N',Gender)
-                sqcur.execute("INSERT INTO PASSENGER VALUES (?,?,?,?,?,?,?,?,?,?,?)", values)
+                sqcur.execute("INSERT INTO Passengers VALUES (?,?,?,?,?,?,?,?,?,?,?)", values)
                 sq.commit()
                 print ("sucessfully booked ticket.")
 
