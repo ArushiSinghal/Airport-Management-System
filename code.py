@@ -29,8 +29,11 @@ def Flight_details():
     print (df)
     while True:
         command = raw_input("Input name of the city for which you want to see flight details else print 1 to exit: ")
-        if (command == '1' or command == 'None'):
+        if (command == '1'):
             return
+        if (!command.isalpha()):
+            continue
+        command = command.upper()
         df = pd.read_sql_query("Select * from Flights where SOURCE=" + "'" + command + "'" + " OR DESTINATION=" + "'" + command + "'", sq)
         if (df.empty):
             print ("No flight on this route")
@@ -45,7 +48,7 @@ def Flight_staff():
         if (sqlquery != '6'):
             continue
         flight_num = raw_input("Enter flight number: ")
-        count = pd.read_sql_query("Select COUNT(*) from Passengers where FLIGHT_NUMBER=" + flight_num + " ORDER BY First_Name", sq) 
+        count = pd.read_sql_query("Select COUNT(*) from Passengers where FLIGHT_NUMBER=" + flight_num, sq)
         df = pd.read_sql_query("Select PNR,First_Name,Last_Name,Class/Seat,Mobile_number from Passengers where FLIGHT_NUMBER=" + flight_num + " ORDER BY First_Name Last_Name", sq)
         if (df.empty):
             print ("No passenger has cleared the security checkin with this flight number or no flight exist with this number")
@@ -85,7 +88,7 @@ def security_personnel():
 
 def passenger():
     while True:
-        print ("Want to see your booked flight details press 1")
+        print ("Want to see already booked flight details press 1")
         print ("press 4 for doing web-checkin")
         print ("press 2 to exit")
         print ("press 3 for new booking")
@@ -94,7 +97,7 @@ def passenger():
             pnr = raw_input("Enter your PNR number: ")
             last_name = raw_input("Enter your Last name: ")
             if (sqlquery == '1'):
-                df = pd.read_sql_query("Select PNR,First_Name, Last_Name, Passengers.FLIGHT_NUMBER, SOURCE, CONNECTION ,DESTINATION, PRICE from Passengers,Flights where Passengers.FLIGHT_NUMBER=Flights.FLIGHT_NUMBER PNR=" + "'" + pnr + "'" + " AND Last_Name=" + "'" + last_name + "'", sq)
+                df = pd.read_sql_query("Select PNR,First_Name, Last_Name, Passengers.FLIGHT_NUMBER, SOURCE, DESTINATION, PRICE,DEPARTURE_TIME,ARRIVAL_TIME from Passengers,Flights where Passengers.FLIGHT_NUMBER=Flights.FLIGHT_NUMBER PNR=" + "'" + pnr + "'" + " AND Last_Name=" + "'" + last_name + "'", sq)
                 if (df.empty):
                     print ("No passenger with this detail")
                 else:
@@ -103,14 +106,17 @@ def passenger():
             else:
                 df = pd.read_sql_query("Select Class/Seat from Passengers,Flights where Passengers.FLIGHT_NUMBER=Flights.FLIGHT_NUMBER PNR=" + "'" + pnr + "'" + " AND Last_Name=" + "'" + last_name + "'", sq)
                 if (df.empty):
-                                                        print ("No passenger with this detail")
-                                                                        else:
-                                                                                                print ("Your Ticket details")
-                                                                                                                    print tabulate(df, headers='keys', tablefmt='psql')
+                    print ("No passenger with this detail")
+                else:
+                    sqlquery = raw_input("Press Y if want to do weeb-checking: ")
+                    sqlquery = sqlquery.upper()
+                    if (sqlquery == 'Y'):
+                        sqcur.execute("update Passengers set Web_Checkin='Y' where PNR = " + "'" + pnr + "'")
+                        sq.commit()
+                        print ("Web checkin done succesfully your seat number is")
+                        print tabulate(df, headers='keys', tablefmt='psql')
         elif (sqlquery == '2'):
             booking()
-        elif (sqlquery == '4'):
-
         else:
             return
 
