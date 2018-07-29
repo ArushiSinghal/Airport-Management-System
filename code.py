@@ -25,24 +25,17 @@ sqcur = sq.cursor()
 
 def Flight_details():
     df = pd.read_sql_query("Select DISTINCT SOURCE as FLIGHT_STATIONS from Flights", sq)
-    df1 = pd.read_sql_query("Select DISTINCT CONNECTION as FLIGHT_STATIONS from Flights", sq)
-    df = pd.concat([df, df1], ignore_index=True)
-    df = (df.drop_duplicates()).dropna(how='any',axis=0)
     print ("list of all the cities with airport")
     print (df)
     while True:
-        print ("Input name of the city for which you want to see flight details else print 1 to exit")
-        command = raw_input()
+        command = raw_input("Input name of the city for which you want to see flight details else print 1 to exit: ")
         if (command == '1' or command == 'None'):
             return
-        df = pd.read_sql_query("Select * from Flights where SOURCE=" + "'" + command + "'" + " OR CONNECTION=" + "'" + command + "'" + " OR DESTINATION=" + "'" + command + "'", sq)
+        df = pd.read_sql_query("Select * from Flights where SOURCE=" + "'" + command + "'" + " OR DESTINATION=" + "'" + command + "'", sq)
         if (df.empty):
             print ("No flight on this route")
         else:
-            print (df)
             print tabulate(df, headers='keys', tablefmt='psql')
-            with pd.option_context('display.max_rows', None, 'display.max_columns', 3):
-                print(df)
 
 def Flight_staff():
     while True:
@@ -55,9 +48,9 @@ def Flight_staff():
         count = pd.read_sql_query("Select COUNT(*) from Passengers where FLIGHT_NUMBER=" + flight_num + " ORDER BY First_Name", sq) 
         df = pd.read_sql_query("Select PNR,First_Name,Last_Name,Class/Seat,Mobile_number from Passengers where FLIGHT_NUMBER=" + flight_num + " ORDER BY First_Name Last_Name", sq)
         if (df.empty):
-            print ("No passenger has cleared the securityt checkinwith this flight number or no flight exist with this number")
+            print ("No passenger has cleared the security checkin with this flight number or no flight exist with this number")
         else:
-            print ("Total of passengers are:")
+            print ("Total number of passengers are:")
             print (count)
             print ("Passenger details")
             print tabulate(df, headers='keys', tablefmt='psql')
@@ -66,8 +59,6 @@ def Flight_staff():
                 sqcur.execute("delete from Passengers where FLIGHT_NUMBER=?", flight_num)
                 sq.commit()
                 print ("Information is deleted successfully.")
-            else:
-                print ("Passenger cannot board the flight as not cleared security check-in.")
 
 def security_personnel():
     while True:
@@ -91,14 +82,37 @@ def security_personnel():
                 print ("Passenger can succesfully board the flight")
             else:
                 print ("Passenger cannot board the flight as not cleared security check-in.")
-'''
+
 def passenger():
     while True:
-        #want to book flight
-        #want to see past bookings
-        #want to exit
-        #flights with empty seats
-'''
+        print ("Want to see your booked flight details press 1")
+        print ("press 4 for doing web-checkin")
+        print ("press 2 to exit")
+        print ("press 3 for new booking")
+        sqlquery = raw_input("Input: ")
+        if (sqlquery == '1' or sqlquery == '4'):
+            pnr = raw_input("Enter your PNR number: ")
+            last_name = raw_input("Enter your Last name: ")
+            if (sqlquery == '1'):
+                df = pd.read_sql_query("Select PNR,First_Name, Last_Name, Passengers.FLIGHT_NUMBER, SOURCE, CONNECTION ,DESTINATION, PRICE from Passengers,Flights where Passengers.FLIGHT_NUMBER=Flights.FLIGHT_NUMBER PNR=" + "'" + pnr + "'" + " AND Last_Name=" + "'" + last_name + "'", sq)
+                if (df.empty):
+                    print ("No passenger with this detail")
+                else:
+                    print ("Your Ticket details")
+                    print tabulate(df, headers='keys', tablefmt='psql')
+            else:
+                df = pd.read_sql_query("Select Class/Seat from Passengers,Flights where Passengers.FLIGHT_NUMBER=Flights.FLIGHT_NUMBER PNR=" + "'" + pnr + "'" + " AND Last_Name=" + "'" + last_name + "'", sq)
+                if (df.empty):
+                                                        print ("No passenger with this detail")
+                                                                        else:
+                                                                                                print ("Your Ticket details")
+                                                                                                                    print tabulate(df, headers='keys', tablefmt='psql')
+        elif (sqlquery == '2'):
+            booking()
+        elif (sqlquery == '4'):
+
+        else:
+            return
 
 def Passengers_details():
     while True:
