@@ -57,7 +57,8 @@ def Flight_staff():
         if (df.empty):
             print ("No passenger has cleared the securityt checkinwith this flight number or no flight exist with this number")
         else:
-            print ("Total of passengers are" + count)
+            print ("Total of passengers are:")
+            print (count)
             print ("Passenger details")
             print tabulate(df, headers='keys', tablefmt='psql')
             sqlquery = raw_input("Type Y if want to delete this information else N: ")
@@ -98,6 +99,26 @@ def passenger():
         #want to exit
         #flights with empty seats
 '''
+
+def Passengers_details():
+    while True:
+        sqlquery = raw_input("To get the list and count of passengers who are either coming and going from particular station press 6 else press 1 to exit: ")
+        if (sqlquery == '1'):
+            return
+        if (sqlquery != '6'):
+            continue
+        name = raw_input("Enter airport name: ")
+        name = name.upper()
+        count = pd.read_sql_query("Select COUNT(*) from Passengers,Flights where Passengers.FLIGHT_NUMBER=Flights.FLIGHT_NUMBER AND (SOURCE=" + "'" + name + "'" + " OR DESTINATION="+"'" + name + "'" + " OR CONNECTION=" +"'" + name + "'" +")", sq)
+        df = pd.read_sql_query("Select PNR,First_Name,Last_Name,Class/Seat,Mobile_number,Passengers.FLIGHT_NUMBER,SOURCE,CONNECTION,DESTINATION from Passengers,Flights where Passengers.FLIGHT_NUMBER=Flights.FLIGHT_NUMBER AND (SOURCE=" + "'" + name + "'" + " OR DESTINATION="+"'" + name + "'" + " OR CONNECTION=" +"'" + name + "'" +")", sq)
+        if (df.empty):
+            print ("No passenger has booked flight from this route no flight exist on this station name")
+        else:
+            print ("Total of passengers are:")
+            print (count)
+            print ("Passenger details")
+            print tabulate(df, headers='keys', tablefmt='psql')
+
 def main():
     while True:
         print ("press S if Security Personnel")
