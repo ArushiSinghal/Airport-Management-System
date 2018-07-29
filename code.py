@@ -96,19 +96,26 @@ def Flight_details():
 
 def Flight_staff():
     while True:
-        sqlquery = raw_input("To see passengers who cleared security checkin press 6 else press 1 to exit: ")
+        sqlquery = raw_input("\nTo see passengers who cleared security checkin press 6 else press 1 to exit: ")
         if (sqlquery == '1'):
             return
         if (sqlquery != '6'):
             continue
         flight_num = raw_input("Enter flight number: ")
-        count = pd.read_sql_query("Select COUNT(*) from Passengers where FLIGHT_NUMBER=" + flight_num, sq)
-        df = pd.read_sql_query("Select PNR,First_Name,Last_Name,Class/Seat,Mobile_number from Passengers where FLIGHT_NUMBER=" + flight_num + " ORDER BY First_Name Last_Name", sq)
+        try:
+            val = int(flight_num)
+        except ValueError:
+            print("Flight number should be an integer")
+            continue
+        count = pd.read_sql_query("Select COUNT(*) as count from Passengers where FLIGHT_NUMBER=" + flight_num + " AND Security_Checkin='Y'", sq)
+        count = count['count'].iloc[0]
+        total_passenger = pd.read_sql_query("Select COUNT(*) as count from Passengers where FLIGHT_NUMBER=" + flight_num, sq)
+        total_passenger = total_passenger['count'].iloc[0]
+        df = pd.read_sql_query("Select PNR,First_Name,Last_Name,Gender,`Class/Seat`,Mobile_number from Passengers where FLIGHT_NUMBER=" + flight_num + " ORDER BY First_Name,Last_Name", sq)
         if (df.empty):
             print ("No passenger has cleared the security checkin with this flight number or no flight exist with this number")
         else:
-            print ("Total number of passengers are:")
-            print (count)
+            print "\nTotal number of passengers who cleared security checkin for this flight are ",count,"out of",total_passenger,"total passengers."
             print ("Passenger details")
             print tabulate(df, headers='keys', tablefmt='psql')
             sqlquery = raw_input("Type Y if want to delete this information else N: ")
@@ -191,7 +198,7 @@ def Passengers_details():
         name = (raw_input("Enter airport name: ")).upper()
         count = pd.read_sql_query("Select COUNT(*) as count from Passengers,Flights where Passengers.FLIGHT_NUMBER=Flights.FLIGHT_NUMBER AND (SOURCE=" + "'" + name + "'" + " OR DESTINATION="+"'" + name + "'" +")", sq)
         count = count['count'].iloc[0]
-        df = pd.read_sql_query("Select PNR,First_Name,Last_Name,`Class/Seat`,Mobile_number,Passengers.FLIGHT_NUMBER,SOURCE,DESTINATION from Passengers,Flights where Passengers.FLIGHT_NUMBER=Flights.FLIGHT_NUMBER AND (SOURCE=" + "'" + name + "'" + " OR DESTINATION="+"'" + name + "')", sq)
+        df = pd.read_sql_query("Select PNR,First_Name,Last_Name,Gender,`Class/Seat`,Mobile_number,Passengers.FLIGHT_NUMBER,SOURCE,DESTINATION from Passengers,Flights where Passengers.FLIGHT_NUMBER=Flights.FLIGHT_NUMBER AND (SOURCE=" + "'" + name + "'" + " OR DESTINATION="+"'" + name + "')", sq)
         if (df.empty):
             print ("No passenger has booked flight from this route no flight exist on this station name.")
         else:
