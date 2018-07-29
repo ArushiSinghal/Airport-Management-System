@@ -169,39 +169,32 @@ def passenger():
                         sq.commit()
                         print ("Web checkin done succesfully your seat number is")
                         print tabulate(df, headers='keys', tablefmt='psql')
-        elif (sqlquery == '2'):
+        elif (sqlquery == '3'):
             booking()
-        else:
+        elif (sqlquery == '2'):
             return
 
 def Passengers_details():
     while True:
-        sqlquery = raw_input("To get the list and count of passengers who are either coming and going from particular station press 6 else press 1 to exit: ")
+        sqlquery = raw_input("\nTo get the list and count of passengers who are either coming and going from particular station press 6 else press 1 to exit: ")
         if (sqlquery == '1'):
             return
         if (sqlquery != '6'):
             continue
-        name = raw_input("Enter airport name: ")
-        name = name.upper()
-        count = pd.read_sql_query("Select COUNT(*) from Passengers,Flights where Passengers.FLIGHT_NUMBER=Flights.FLIGHT_NUMBER AND (SOURCE=" + "'" + name + "'" + " OR DESTINATION="+"'" + name + "'" +")", sq)
-        df = pd.read_sql_query("Select PNR,First_Name,Last_Name,Class/Seat,Mobile_number,Passengers.FLIGHT_NUMBER,SOURCE,DESTINATION from Passengers,Flights where Passengers.FLIGHT_NUMBER=Flights.FLIGHT_NUMBER AND (SOURCE=" + "'" + name + "'" + " OR DESTINATION="+"'" + name + "')", sq)
+        name = (raw_input("Enter airport name: ")).upper()
+        count = pd.read_sql_query("Select COUNT(*) as count from Passengers,Flights where Passengers.FLIGHT_NUMBER=Flights.FLIGHT_NUMBER AND (SOURCE=" + "'" + name + "'" + " OR DESTINATION="+"'" + name + "'" +")", sq)
+        count = count['count'].iloc[0]
+        df = pd.read_sql_query("Select PNR,First_Name,Last_Name,`Class/Seat`,Mobile_number,Passengers.FLIGHT_NUMBER,SOURCE,DESTINATION from Passengers,Flights where Passengers.FLIGHT_NUMBER=Flights.FLIGHT_NUMBER AND (SOURCE=" + "'" + name + "'" + " OR DESTINATION="+"'" + name + "')", sq)
         if (df.empty):
-            print ("No passenger has booked flight from this route no flight exist on this station name")
+            print ("No passenger has booked flight from this route no flight exist on this station name.")
         else:
-            print ("Total of passengers are:")
-            print (count)
+            print "Total of passengers are:",count
             print ("Passenger details")
             print tabulate(df, headers='keys', tablefmt='psql')
 
 def main():
     while True:
-        print ("\nPress S if Security Personnel")
-        print ("press F if Flight Staff")
-        print ("press P if Passengers")
-        print ("To know the details of all flights departing and arriving from particular airport press 1.")
-        print ("List of all passengers arriving or departing from particular airport press 2")
-        print ("press E to exit.\n")
-        command = raw_input()
+        command = raw_input("\nPress S if Security Personnel.\nPress F if Flight Staff.\nPress P if Passengers.\nTo know the details of all flights departing and arriving from particular airport press 1.\nList of all passengers arriving or departing from particular airport press 2.\nPress E to exit.\nInput: ")
         if (command.upper() == "E"):
             sqcur.close()
             sq.close()
@@ -212,9 +205,9 @@ def main():
             Flight_staff()
         elif (command.upper() == "P"):
             passenger()
-        elif (command.upper() == "1"):
+        elif (command == "1"):
             Flight_details()
-        elif (command.upper() == "2"):
+        elif (command == "2"):
             Passengers_details()
 
 if __name__ == "__main__":
