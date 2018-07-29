@@ -23,6 +23,60 @@ from tabulate import tabulate
 sq = sqlite3.connect("flight_detail.db")
 sqcur = sq.cursor()
 
+def seat_number(flight_num,Class):
+    val = pd.read_sql_query("Select COUNT(*) as count from Passengers where FLIGHT_NUMBER=" + flight_num, sq)
+    val = val['count'].iloc[0]
+    seat = Class + "/" + val
+    return seat
+
+def generate_pnr():
+    while True:
+        random = ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(6)])
+        df = pd.read_sql_query("Select * from Passengers where PNR=" + "'" + random + "'", sq)
+        if (df.empty):
+            return random
+
+def booking():
+    df = pd.read_sql_query("Select DISTINCT SOURCE as FLIGHT_STATIONS from Flights", sq)
+    print ("list of all the cities with airport")
+    print (df)
+    while True:
+        print ("Press 1 to book else press 2 to exit")
+        command = raw_input("Input: ")
+        if (command == '2'):
+            return
+        elif (command != '1'):
+            continue
+        board_air = raw_input("Name of boarding station: ")
+        des_air = raw_input("Name of destination station: ")
+        board_air = board_air.upper()
+        des_air = des_air.upper()
+        df = pd.read_sql_query("Select Flights.* from Flights,Passengers where SOURCE=" + "'" + board_air + "'" + " AND DESTINATION=" + "'" + des_air + "'" + "AND Flights.FLIGHT_NUMBER = Passengers.FLIGHT_NUMBER Having COUNT(Passengers.FLIGHT_NUMBER) < Flights.SIZE", sq)
+        if (df.empty):
+            print ("No flight on this route and if it is there than no vacancy available")
+        else:
+            print tabulate(df, headers='keys', tablefmt='psql')
+            command = raw_input("Input flight number fromabove if want to book ticket else press 1 to re-booking: ")
+            if (command == '1'):
+                continue
+            df = pd.read_sql_query("Select Flights.* from Flights,Passengers where FLIGHT_NUMBER=" + command + "AND Flights.FLIGHT_NUMBER = Passengers.FLIGHT_NUMBER Having COUNT(Passengers.FLIGHT_NUMBER) < Flights.SIZE", sq)
+            if (df.empty):
+                print ("wrong flight number or vacancy in flight...exit")
+                continue
+            first_name = (raw_input("First Name: ")).upper()
+            last_name = (raw_input("Last Name: ")).upper()
+            Age = int(raw_input("Enter your Age: "))
+            Nationality = (raw_input("Nationality: ")).upper()
+            Mobile_number = int(raw_input("Enter your MObile Number: "))
+            Class = (raw_input("Enter class Either B or E: ")).upper()
+            if (Class != 'B' or Class != 'E'):
+                Class = 'E'
+            PNR = generate_pnr()
+            seat = seat_number(command,Class)
+            values = (command,PNR, first_name, last_name, Age, Nationality,'N' ,Mobile_number,seat,'N')
+            sqcur.execute("INSERT INTO PASSENGER VALUES (?,?,?,?,?,?,?,?,?,?)", values)
+            sq.commit()
+
 def Flight_details():
     df = pd.read_sql_query("Select DISTINCT SOURCE as FLIGHT_STATIONS from Flights", sq)
     print ("list of all the cities with airport")
@@ -129,8 +183,8 @@ def Passengers_details():
             continue
         name = raw_input("Enter airport name: ")
         name = name.upper()
-        count = pd.read_sql_query("Select COUNT(*) from Passengers,Flights where Passengers.FLIGHT_NUMBER=Flights.FLIGHT_NUMBER AND (SOURCE=" + "'" + name + "'" + " OR DESTINATION="+"'" + name + "'" + " OR CONNECTION=" +"'" + name + "'" +")", sq)
-        df = pd.read_sql_query("Select PNR,First_Name,Last_Name,Class/Seat,Mobile_number,Passengers.FLIGHT_NUMBER,SOURCE,CONNECTION,DESTINATION from Passengers,Flights where Passengers.FLIGHT_NUMBER=Flights.FLIGHT_NUMBER AND (SOURCE=" + "'" + name + "'" + " OR DESTINATION="+"'" + name + "'" + " OR CONNECTION=" +"'" + name + "'" +")", sq)
+        count = pd.read_sql_query("Select COUNT(*) from Passengers,Flights where Passengers.FLIGHT_NUMBER=Flights.FLIGHT_NUMBER AND (SOURCE=" + "'" + name + "'" + " OR DESTINATION="+"'" + name + "'" +")", sq)
+        df = pd.read_sql_query("Select PNR,First_Name,Last_Name,Class/Seat,Mobile_number,Passengers.FLIGHT_NUMBER,SOURCE,DESTINATION from Passengers,Flights where Passengers.FLIGHT_NUMBER=Flights.FLIGHT_NUMBER AND (SOURCE=" + "'" + name + "'" + " OR DESTINATION="+"'" + name + "')", sq)
         if (df.empty):
             print ("No passenger has booked flight from this route no flight exist on this station name")
         else:
