@@ -119,16 +119,21 @@ def Flight_staff():
 
 def security_personnel():
     while True:
-        sqlquery = raw_input("For clearing security checkin for passengers press 6 else press 1 to exit: ")
+        sqlquery = raw_input("\nFor clearing security checkin for passengers press 6 else press 1 to exit: ")
         if (sqlquery == '1'):
             return
         if (sqlquery != '6'):
             continue
         pnr = raw_input("Enter PNR num: ")
         flight_num = raw_input("Enter flight_num: ")
+        try:
+            val = int(flight_num)
+        except ValueError:
+               print("Flight number should be an integer")
+               continue
         df = pd.read_sql_query("Select * from Passengers where PNR=" + "'" + pnr + "'" + " AND FLIGHT_NUMBER=" + flight_num, sq)
         if (df.empty):
-            print ("No passenger with this detail")
+            print ("No passenger with this details.")
         else:
             print ("Passenger details")
             print tabulate(df, headers='keys', tablefmt='psql')
@@ -138,6 +143,8 @@ def security_personnel():
                 sq.commit()
                 print ("Passenger can succesfully board the flight")
             else:
+                sqcur.execute("update Passengers set Security_Checkin='N' where PNR = " + "'" + pnr + "'")
+                sq.commit()
                 print ("Passenger cannot board the flight as not cleared security check-in.")
 
 def passenger():
