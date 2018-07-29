@@ -86,9 +86,9 @@ def booking():
                 continue
             Class = (raw_input("Enter class Either B or E: ")).upper()
             Gender = (raw_input("Enter Gender Either M or F: ")).upper()
-            if (Class != 'B' or Class != 'E'):
+            if (Class != 'B' and Class != 'E'):
                 Class = 'E'
-            if (Gender != 'M' or Gender != 'F'):
+            if (Gender != 'M' and Gender != 'F'):
                 Gender = 'M'
             Age = int(Age)
             Mobile_number = int(Mobile_number)
