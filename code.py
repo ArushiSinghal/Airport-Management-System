@@ -38,7 +38,7 @@ def booking():
             continue
         board_air = (raw_input("Name of boarding station: ")).upper()
         des_air = (raw_input("Name of destination station: ")).upper()
-        df = pd.read_sql_query("Select Flights.* from Flights,Passengers where SOURCE=" + "'" + board_air + "'" + " AND DESTINATION=" + "'" + des_air + "'", sq)
+        df = pd.read_sql_query("Select Flights.* from Flights where SOURCE=" + "'" + board_air + "'" + " AND DESTINATION=" + "'" + des_air + "'", sq)
         if (df.empty):
             print ("No flight on this route.")
         else:
