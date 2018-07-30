@@ -136,7 +136,7 @@ def Flight_staff():
         count = count['count'].iloc[0]
         total_passenger = pd.read_sql_query("Select COUNT(*) as count from Passengers where FLIGHT_NUMBER=" + flight_num, sq)
         total_passenger = total_passenger['count'].iloc[0]
-        df = pd.read_sql_query("Select PNR,First_Name,Last_Name,Gender,`Class/Seat`,Mobile_number from Passengers where FLIGHT_NUMBER=" + flight_num + " ORDER BY First_Name,Last_Name", sq)
+        df = pd.read_sql_query("Select PNR,First_Name,Last_Name,Gender,`Class/Seat`,Mobile_number from Passengers where FLIGHT_NUMBER=" + flight_num + " AND Security_Checkin='Y' ORDER BY First_Name,Last_Name", sq)
         if (df.empty):
             print ("No passenger has cleared the security checkin with this flight number or no flight exist with this number")
         else:
