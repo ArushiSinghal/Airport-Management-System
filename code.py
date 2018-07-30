@@ -52,7 +52,10 @@ def booking():
             count = pd.read_sql_query("Select COUNT(*) as count from Passengers where FLIGHT_NUMBER=" + flight_number, sq)
             count = int(count['count'].iloc[0])
             size = pd.read_sql_query("Select SIZE from Flights where FLIGHT_NUMBER=" + flight_number, sq)
-            size = int(size['SIZE'].iloc[0])
+            if (size.empty):
+                size = 0
+            else:
+                size = int(size['SIZE'].iloc[0])
             if (size <= count):
                 print ("No more vacancy in this flight number or you entered wrong number...please enter different flight number...exit")
                 continue
@@ -192,6 +195,7 @@ def passenger():
             df = pd.read_sql_query("Select PNR,First_Name, Last_Name, Passengers.FLIGHT_NUMBER, SOURCE, DESTINATION, PRICE,DEPARTURE_TIME,ARRIVAL_TIME from Passengers,Flights where Passengers.FLIGHT_NUMBER=Flights.FLIGHT_NUMBER AND PNR=" + "'" + pnr + "'" + " AND Last_Name=" + "'" + last_name + "'", sq)
             if (df.empty):
                 print ("No passenger with this detail")
+                continue
             else:
                 print ("Your Ticket details")
                 print tabulate(df, headers='keys', tablefmt='psql')
