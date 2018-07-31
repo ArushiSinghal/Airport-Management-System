@@ -144,9 +144,9 @@ def Flight_staff():
             print ("No passenger has cleared the security checkin with this flight number or no flight exist with this number")
         else:
             print "\nTotal number of passengers who cleared security checkin for this flight are ",count,"out of",total_passenger,"total passengers."
-            print ("Passenger details")
+            print ("Passengers details (sorted by  name of the passengers) who cleared security check-in")
             print tabulate(df, headers='keys', tablefmt='psql')
-            sqlquery = raw_input("Type Y if want to delete this information else N: ")
+            sqlquery = raw_input("Type Y if you want to delete passengers information of this flight_number else N: ")
             if (sqlquery.upper() == 'Y'):
                 sqcur.execute("delete from Passengers where FLIGHT_NUMBER=?", flight_num)
                 sq.commit()
